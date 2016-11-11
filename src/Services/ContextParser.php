@@ -23,16 +23,12 @@ class ContextParser
         $formatted = $content;
 
         foreach ($context as $key => $value) {
-            // if (strpos($value, '{') || strpos($value, '}')) {
-            //     throw new \Exception("Invalid context data: " . $value . ". Context keys cannot contain `{` or `}` symbols.");
-            // }
+            $placeholder = '{' . $key . '}';
 
-            $k = '{' . $key . '}';
-
-            if (strpos($content, $k)) {
-                $formatted = str_replace($k, $value, $formatted);
+            if (strpos($content, $placeholder)) {
+                $formatted = str_replace($placeholder, $value, $formatted);
             } else {
-                throw new ContextParseException("Invalid context data: the context parser could not find $k placeholder in the content string.");
+                throw new ContextParseException("Invalid context data: the context parser could not find $placeholder placeholder in the content string.");
             }
         } 
 

@@ -23,7 +23,7 @@ class ContextParserTest extends PHPUnit_Framework_TestCase
     public function it_should_throw_exception_for_invalid_context_data()
     {
         $content = "Hello, {name}.";
-        $context = ['age' => '23']; // no name == invalid
+        $context = ['age' => '23']; // no age == invalid
         $parsedContent = ContextParser::parse($content, $context);
     }
 }

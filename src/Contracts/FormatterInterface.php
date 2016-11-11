@@ -12,4 +12,11 @@ interface FormatterInterface
      * @return $string The formatted string.
      */
     public function format($content, $context);
+
+    /**
+     * Should set the log level for the log.
+     *
+     * @param string $logLevel
+     */
+    public function setLogLevel($logLevel);
 }

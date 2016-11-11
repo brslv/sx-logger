@@ -1,5 +1,6 @@
 <?php
 
+use Sx\Logger\LogLevel;
 use Sx\Logger\Services\Moment;
 use Sx\Logger\Formatters\SimpleTextFormatter;
 
@@ -20,9 +21,9 @@ class SimpleTextFormatterTest extends PHPUnit_Framework_TestCase
 
         $content = "This should be formatted properly";
         $context = [];
-        $formattedContent = $stf->format($content, $context);
+        $formattedContent = $stf->setLogLevel(LogLevel::EMERGENCY)->format($content, $context);
 
-        $expected = Moment::pretty() . $content . "\n";
+        $expected = Moment::pretty() . "[emergency] " . $content . "\n";
 
         $this->assertEquals($expected, $formattedContent);
     }

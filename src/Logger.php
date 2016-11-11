@@ -2,6 +2,7 @@
 
 namespace Sx\Logger;
 
+use Sx\Logger\LogLevel;
 use Sx\Logger\Contracts\LoggerInterface;
 use Sx\Logger\Contracts\WriterInterface;
 use Sx\Logger\Contracts\FormatterInterface;
@@ -39,9 +40,9 @@ class Logger implements LoggerInterface
      */
     public function emergency($message, array $context = array())
     {
-        // $formatted = $this->formatter->format($message, $context);
-        //
-        // return $this->writer->write($formatted);
+        $formatted = $this->formatter->setLogLevel(LogLevel::EMERGENCY)->format($message, $context);
+
+        return $this->writer->write($formatted);
     }
 
     /**

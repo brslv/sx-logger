@@ -2,6 +2,7 @@
 
 namespace Sx\Logger\Formatters;
 
+use Sx\Logger\LogLevel;
 use Sx\Logger\Services\Moment;
 use Sx\Logger\Services\ContextParser;
 use Sx\Logger\Contracts\FormatterInterface;
@@ -13,6 +14,9 @@ use Sx\Logger\Contracts\FormatterInterface;
  */
 class SimpleTextFormatter implements FormatterInterface
 {
+    /** @var string */
+    private $logLevel;
+
     /**
      * Formats content as a simple text, ready to be logged.
      *
@@ -24,6 +28,18 @@ class SimpleTextFormatter implements FormatterInterface
     {
         $formatted = ContextParser::parse($content, $context);
 
-        return Moment::pretty() . $formatted . "\n";
+        return Moment::pretty() . '[' . $this->logLevel . '] ' .  $formatted . "\n";
+    }
+
+    /**
+     * Set the log level for the log.
+     *
+     * @param string $logLevel
+     */
+    public function setLogLevel($logLevel)
+    {
+        $this->logLevel = $logLevel;
+
+        return $this;
     }
 }
