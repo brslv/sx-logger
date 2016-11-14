@@ -3,6 +3,7 @@
 namespace Sx\Logger;
 
 use Sx\Logger\LogLevel;
+use \InvalidArgumentException;
 use Sx\Logger\Contracts\LoggerInterface;
 use Sx\Logger\Contracts\WriterInterface;
 use Sx\Logger\Contracts\FormatterInterface;
@@ -42,7 +43,7 @@ class Logger implements LoggerInterface
     {
         $formatted = $this->formatter->setLogLevel(LogLevel::EMERGENCY)->format($message, $context);
 
-        return $this->writer->write($formatted);
+        $this->writer->write($formatted);
     }
 
     /**
@@ -57,6 +58,9 @@ class Logger implements LoggerInterface
      */
     public function alert($message, array $context = array())
     {
+        $formatted = $this->formatter->setLogLevel(LogLevel::ALERT)->format($message, $context);
+
+        $this->writer->write($formatted);
     }
 
     /**
@@ -70,6 +74,9 @@ class Logger implements LoggerInterface
      */
     public function critical($message, array $context = array())
     {
+        $formatted = $this->formatter->setLogLevel(LogLevel::CRITICAL)->format($message, $context);
+
+        $this->writer->write($formatted);
     }
 
     /**
@@ -82,6 +89,9 @@ class Logger implements LoggerInterface
      */
     public function error($message, array $context = array())
     {
+        $formatted = $this->formatter->setLogLevel(LogLevel::ERROR)->format($message, $context);
+
+        $this->writer->write($formatted);
     }
 
     /**
@@ -96,7 +106,10 @@ class Logger implements LoggerInterface
      */
     public function warning($message, array $context = array())
     {
-    }
+        $formatted = $this->formatter->setLogLevel(LogLevel::WARNING)->format($message, $context);
+
+        $this->writer->write($formatted);
+   }
 
     /**
      * Normal but significant events.
@@ -107,6 +120,9 @@ class Logger implements LoggerInterface
      */
     public function notice($message, array $context = array())
     {
+        $formatted = $this->formatter->setLogLevel(LogLevel::NOTICE)->format($message, $context);
+
+        $this->writer->write($formatted);
     }
 
     /**
@@ -120,6 +136,9 @@ class Logger implements LoggerInterface
      */
     public function info($message, array $context = array())
     {
+        $formatted = $this->formatter->setLogLevel(LogLevel::INFO)->format($message, $context);
+
+        $this->writer->write($formatted);
     }
 
     /**
@@ -131,6 +150,9 @@ class Logger implements LoggerInterface
      */
     public function debug($message, array $context = array())
     {
+        $formatted = $this->formatter->setLogLevel(LogLevel::DEBUG)->format($message, $context);
+
+        $this->writer->write($formatted);
     }
 
     /**
@@ -143,5 +165,12 @@ class Logger implements LoggerInterface
      */
     public function log($level, $message, array $context = array())
     {
+        if (LogLevel::invalid($level)) {
+            throw new InvalidArgumentException('Invalid log level: [' . $level . ']');
+        }
+
+        $formatted = $this->formatter->setLogLevel(strtolower($level))->format($message, $context);
+
+        $this->writer->write($formatted);
     }
 }

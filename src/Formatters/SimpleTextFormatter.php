@@ -4,19 +4,16 @@ namespace Sx\Logger\Formatters;
 
 use Sx\Logger\LogLevel;
 use Sx\Logger\Services\Moment;
+use Sx\Logger\Formatters\Formatter;
 use Sx\Logger\Services\ContextParser;
-use Sx\Logger\Contracts\FormatterInterface;
 
 /**
  * Class SimpleTextFormatter.
  *
  * @package Sx\Logger\Formatters
  */
-class SimpleTextFormatter implements FormatterInterface
+class SimpleTextFormatter extends Formatter
 {
-    /** @var string */
-    private $logLevel;
-
     /**
      * Formats content as a simple text, ready to be logged.
      *
@@ -26,20 +23,8 @@ class SimpleTextFormatter implements FormatterInterface
      */
     public function format($content, $context)
     {
-        $formatted = ContextParser::parse($content, $context);
+        $parsed = ContextParser::parse($content, $context);
 
-        return Moment::pretty() . '[' . $this->logLevel . '] ' .  $formatted . "\n";
-    }
-
-    /**
-     * Set the log level for the log.
-     *
-     * @param string $logLevel
-     */
-    public function setLogLevel($logLevel)
-    {
-        $this->logLevel = $logLevel;
-
-        return $this;
+        return $this->logLevelAndDate() . $parsed . "\n";
     }
 }

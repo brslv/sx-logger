@@ -15,7 +15,7 @@ class SimpleTextFormatterTest extends PHPUnit_Framework_TestCase
     }
 
     /** @test */
-    public function it_can_prepend_date_time()
+    public function it_can_format_simple_text()
     {
         $stf = new SimpleTextFormatter();
 
@@ -23,7 +23,7 @@ class SimpleTextFormatterTest extends PHPUnit_Framework_TestCase
         $context = [];
         $formattedContent = $stf->setLogLevel(LogLevel::EMERGENCY)->format($content, $context);
 
-        $expected = Moment::pretty() . "[emergency] " . $content . "\n";
+        $expected = "[emergency] " . Moment::pretty() . $content . "\n";
 
         $this->assertEquals($expected, $formattedContent);
     }

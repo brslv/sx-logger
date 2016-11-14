@@ -14,6 +14,14 @@ class ContextParserTest extends PHPUnit_Framework_TestCase
         $expected = 'Hello, Borislav Grigorov, 23, {Sofia}.';
 
         $this->assertEquals($expected, $parsedContent);
+
+        $content = "{something} went wrong, bro.";
+        $context = ['something' => 'Something'];
+        $parsedContent = ContextParser::parse($content, $context);
+
+        $expected = 'Something went wrong, bro.';
+
+        $this->assertEquals($expected, $parsedContent);
     }
 
     /** 

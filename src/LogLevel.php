@@ -17,4 +17,26 @@ class LogLevel
     const NOTICE    = 'notice';
     const INFO      = 'info';
     const DEBUG     = 'debug';
+
+    /**
+     * Check if a log level is invalid.
+     *
+     * @param string $level
+     * @return bool
+     */
+    public static function invalid($level)
+    {
+        return ! self::valid($level);
+    }
+
+    /**
+     * Check if a log level is valid.
+     *
+     * @param string $level
+     * @return bool
+     */
+    public static function valid($level)
+    {
+        return defined('self::' . $level);
+    }
 }

@@ -23,6 +23,11 @@ class Moment
         return new DateTime("now");
     }
 
+    public static function toTimestamp($moment)
+    {
+        return strtotime($moment->format("F j, Y, g:i a"));
+    }
+
     /**
      * Get a formatted date/time string of "now".
      *
