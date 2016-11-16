@@ -16,7 +16,7 @@ interface FormatterInterface
     /**
      * Should set the log level for the log.
      *
-     * @param string $logLevel
+     * @return Sx\Logger\Formatters\Formatter
      */
     public function setLogLevel($logLevel);
 }

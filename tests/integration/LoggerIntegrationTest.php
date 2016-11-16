@@ -1,7 +1,9 @@
 <?php
 
+use \SplFileObject;
 use Sx\Logger\Logger;
 use Sx\Logger\LogLevel;
+use Sx\Logger\LogHandler;
 use Sx\Logger\Services\Moment;
 use Sx\Logger\Writers\FileWriter;
 use Sx\Logger\Formatters\SimpleTextFormatter;
@@ -10,180 +12,47 @@ class LoggerIntegrationTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->filePath = __DIR__ . "/../storage/test.log";
+        $this->firstFilePath = __DIR__ . "/../storage/test.log";
+        $this->secondFilePath = __DIR__ . "/../storage/second_test.log";
 
-        $this->file = new SplFileObject($this->filePath, 'w+');
+        $this->firstFile = new SplFileObject($this->firstFilePath, 'w+');
+        $this->secondFile = new SplFileObject($this->secondFilePath, 'w+');
     }
     
-    private function read_whole_file()
+    private function read_whole_file($file)
     {
         $lines = '';
 
-        while (!$this->file->eof()) {
-            $lines .= $this->file->fgets();
+        while (!$file->eof()) {
+            $lines .= $file->fgets();
         }
 
-        return $lines;
-    }
+        return $lines; }
 
-    private function truncate_file()
+    private function truncate_file($file)
     {
-        return $this->file->fwrite('');
-    }
-
-    /** @test */
-    public function it_can_write_simple_text_with_time_and_placeholder_as_emergency()
-    {
-        $writer = new FileWriter($this->filePath);
-        $formatter = new SimpleTextFormatter;
-
-        $logger = new Logger($writer, $formatter); 
-        $logger->emergency("The quick {color} {animal} jumps over...", [
-            'color' => 'brown',
-            'animal' => 'fox',
-        ]);
-        $expected = "[" . LogLevel::EMERGENCY . "] " . Moment::pretty() . "The quick brown fox jumps over...\n";
-
-        $content = $this->read_whole_file();
-        $this->truncate_file();
-
-        $this->assertEquals($expected, $content);
+        return $file->fwrite('');
     }
 
     /** @test */
-    public function it_can_write_simple_text_with_time_and_placeholder_as_alert()
+    public function it_can_log_to_a_single_handler()
     {
-        $writer = new FileWriter($this->filePath);
-        $formatter = new SimpleTextFormatter;
-        $logger = new Logger($writer, $formatter);
+        $firstHandler = new LogHandler(new FileWriter($this->firstFilePath), new SimpleTextFormatter);
+        $secondHandler = new LogHandler(new FileWriter($this->secondFilePath), new SimpleTextFormatter);
+        $handlers = [$firstHandler, $secondHandler];
+        $logger = new Logger($handlers);
 
-        $logger->alert("{something} went wrong!", [
-            'something' => 'Something',
-        ]);
-        $expected = "[" . LogLevel::ALERT . "] " . Moment::pretty() . "Something went wrong!\n";
-        $content = $this->read_whole_file();
-        $this->truncate_file();
+        $content = "Some handy information...";
+        $logger->info($content);
 
-        $this->assertEquals($expected, $content);
-    }
+        $firstFileContents = $this->read_whole_file($this->firstFile);
+        $this->truncate_file($this->firstFile);
 
-    /** @test */
-    public function it_can_write_simple_text_with_time_and_placeholder_as_critical()
-    {
-        $writer = new FileWriter($this->filePath);
-        $formatter = new SimpleTextFormatter;
-        $logger = new Logger($writer, $formatter);
+        $secondFileContents = $this->read_whole_file($this->secondFile);
+        $this->truncate_file($this->secondFile);
+        $expectedContents = "[" . LogLevel::INFO . "] " . Moment::pretty() . $content . "\n";
 
-        $logger->critical("This is critical!!!", []);
-        $expected = "[" . LogLevel::CRITICAL . "] " . Moment::pretty() . "This is critical!!!\n";
-        $content = $this->read_whole_file();
-        $this->truncate_file();
-
-        $this->assertEquals($expected, $content);
-    }
-
-    /** @test */
-    public function it_can_write_simple_text_with_time_and_placeholder_as_error()
-    {
-        $writer = new FileWriter($this->filePath);
-        $formatter = new SimpleTextFormatter;
-        $logger = new Logger($writer, $formatter);
-
-        $logger->error("This is error!!!", []);
-        $expected = "[" . LogLevel::ERROR . "] " . Moment::pretty() . "This is error!!!\n";
-        $content = $this->read_whole_file();
-        $this->truncate_file();
-
-        $this->assertEquals($expected, $content);
-    }
-
-    /** @test */
-    public function it_can_write_simple_text_with_time_and_placeholder_as_warning()
-    {
-        $writer = new FileWriter($this->filePath);
-        $formatter = new SimpleTextFormatter;
-        $logger = new Logger($writer, $formatter);
-
-        $logger->warning("This is warning!!!", []);
-        $expected = "[" . LogLevel::WARNING . "] " . Moment::pretty() . "This is warning!!!\n";
-        $content = $this->read_whole_file();
-        $this->truncate_file();
-
-        $this->assertEquals($expected, $content);
-    }
-
-    /** @test */
-    public function it_can_write_simple_text_with_time_and_placeholder_as_notice()
-    {
-        $writer = new FileWriter($this->filePath);
-        $formatter = new SimpleTextFormatter;
-        $logger = new Logger($writer, $formatter);
-
-        $logger->notice("This is notice!!!", []);
-        $expected = "[" . LogLevel::NOTICE . "] " . Moment::pretty() . "This is notice!!!\n";
-        $content = $this->read_whole_file();
-        $this->truncate_file();
-
-        $this->assertEquals($expected, $content);
-    }
-
-
-    /** @test */
-    public function it_can_write_simple_text_with_time_and_placeholder_as_info()
-    {
-        $writer = new FileWriter($this->filePath);
-        $formatter = new SimpleTextFormatter;
-        $logger = new Logger($writer, $formatter);
-
-        $logger->info("This is info!!!", []);
-        $expected = "[" . LogLevel::INFO . "] " . Moment::pretty() . "This is info!!!\n";
-        $content = $this->read_whole_file();
-        $this->truncate_file();
-
-        $this->assertEquals($expected, $content);
-    }
-
-    /** @test */
-    public function it_can_write_simple_text_with_time_and_placeholder_as_debug()
-    {
-        $writer = new FileWriter($this->filePath);
-        $formatter = new SimpleTextFormatter;
-        $logger = new Logger($writer, $formatter);
-
-        $logger->debug("This is debug!!!", []);
-        $expected = "[" . LogLevel::DEBUG . "] " . Moment::pretty() . "This is debug!!!\n";
-        $content = $this->read_whole_file();
-        $this->truncate_file();
-
-        $this->assertEquals($expected, $content);
-    }
-
-    /** @test */
-    public function it_can_write_simple_text_with_time_and_placeholder_as_log()
-    {
-        $writer = new FileWriter($this->filePath);
-        $formatter = new SimpleTextFormatter;
-        $logger = new Logger($writer, $formatter);
-
-        $logger->log('INFO', "This is log!!!", []);
-        $expected = "[" . LogLevel::INFO . "] " . Moment::pretty() . "This is log!!!\n";
-        $content = $this->read_whole_file();
-        $this->truncate_file();
-
-        $this->assertEquals($expected, $content);
-    }
-
-    /** 
-     * @test 
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid log level: [INVALID]
-     */
-    public function log_method_throws_exception_on_invalid_log_level()
-    {
-        $writer = new FileWriter($this->filePath);
-        $formatter = new SimpleTextFormatter;
-        $logger = new Logger($writer, $formatter);
-
-        $logger->log('INVALID', "This is log!!!", []);
+        $this->assertEquals($expectedContents, $firstFileContents);
+        $this->assertEquals($expectedContents, $secondFileContents);
     }
 }

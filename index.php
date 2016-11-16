@@ -3,7 +3,13 @@
 require __DIR__ . '/vendor/autoload.php';
 
 use Sx\Logger\Logger;
+use Sx\Logger\Writers\FileWriter;
+use Sx\Logger\Formatters\SimpleTextFormatter;
 
-$l = Logger::getInstance();
+$writer = new FileWriter(__DIR__ . '/storage/filelog.log');
+$formatter = new SimpleTextFormatter;
+$fileLogger = new Logger($writer, $formatter);
 
-var_dump($l);
+$fileLogger->info('A user with IP [{ip}] has logged', [
+    'ip' => $_SERVER['REMOTE_ADDR'],
+]);
